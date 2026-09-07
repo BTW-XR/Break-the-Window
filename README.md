@@ -1,5 +1,7 @@
 # Break-the-Window
 
+[![Visit the Project Website](https://img.shields.io/badge/Visit_the_Project_Website-btw--xr.github.io-2ea44f?style=for-the-badge&logo=githubpages&logoColor=white)](https://btw-xr.github.io/)
+
 A mixed-reality research app (Meta Quest, OpenXR) for browsing the web with modular, resizable, splittable "windows" floating in space. Built in Unity 6 with [Vuplex WebView](https://www.vuplex.com) for in-headset web content, and ships with a session-logging pipeline plus a web-based replay tool for studying how people organize multiple windows in MR.
 
 ## What It Does
@@ -83,3 +85,17 @@ See `analysis/README.md` for full usage.
 ## Notes
 
 - `TODO.md` tracks current known work items.
+
+## Funding
+
+This project is funded in part by a Google Research grant, Georgia Tech, and the U.S. National Science Foundation (NSF).
+
+This material is based upon work supported in part by the National Science Foundation under Grant No. IIS-2441310.
+
+<p align="center">
+  <a href="https://research.google/"><img src="docs/assets/funding/google.png" alt="Google Research" height="54"></a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://www.gatech.edu/"><img src="docs/assets/funding/georgia-tech.png" alt="Georgia Tech" height="54"></a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://www.nsf.gov/"><img src="docs/assets/funding/nsf.png" alt="U.S. National Science Foundation" height="54"></a>
+</p>
