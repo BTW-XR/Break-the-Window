@@ -1,0 +1,16 @@
+node_modules/
+dist/
+*.local
+.env
+.env.*
+!.env.example
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Vite
+.vite/
+coverage/

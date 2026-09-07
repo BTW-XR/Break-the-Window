@@ -1,0 +1,40 @@
+{
+  "rules": [
+    {
+      "ruleId": "youtube-watch",
+      "displayName": "YouTube Watch",
+      "supportedHosts": ["youtube.com", "www.youtube.com"],
+      "matchPattern": "^https?:\\/\\/(?:www\\.)?youtube\\.com\\/watch\\?(?:.*&)?v=(?<videoId>[A-Za-z0-9_-]+)(?:&.*)?$",
+      "derivedUrls": [
+        {
+          "name": "watch",
+          "template": "https://www.youtube.com/watch?v={videoId}"
+        },
+        {
+          "name": "embed",
+          "template": "https://www.youtube.com/embed/{videoId}"
+        },
+        {
+          "name": "thumbnail",
+          "template": "https://img.youtube.com/vi/{videoId}/hqdefault.jpg"
+        }
+      ]
+    },
+    {
+      "ruleId": "example-post",
+      "displayName": "Example Multi-Part Post",
+      "supportedHosts": ["example.com", "www.example.com"],
+      "matchPattern": "^https?:\\/\\/(?:www\\.)?example\\.com\\/(?<userSlug>[^\\/]+)\\/posts\\/(?<postId>[^\\/?#]+)\\?tab=(?<tab>[^&#]+).*$",
+      "derivedUrls": [
+        {
+          "name": "summary",
+          "template": "https://api.example.com/users/{userSlug}/posts/{postId}/summary"
+        },
+        {
+          "name": "tabView",
+          "template": "https://www.example.com/{userSlug}/posts/{postId}?tab={tab}"
+        }
+      ]
+    }
+  ]
+}

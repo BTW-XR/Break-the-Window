@@ -1,0 +1,120 @@
+{
+  "rules": [
+    {
+      "ruleId": "youtube-watch",
+      "displayName": "YouTube Watch Video",
+      "supportedHosts": ["youtube.com", "www.youtube.com"],
+      "matchPattern": "^https?:\\/\\/(?:www\\.)?youtube\\.com\\/watch\\?(?:.*&)?v=(?<videoId>[A-Za-z0-9_-]{6,})(?:&.*)?$",
+      "derivedUrls": [
+        {
+          "name": "youtube-player",
+          "template": "/youtube/{videoId}/video"
+        },
+        {
+          "name": "youtube-comments",
+          "template": "/youtube/{videoId}/comments"
+        },
+        {
+          "name": "youtube-metadata",
+          "template": "/youtube/{videoId}/metadata"
+        },
+        {
+          "name": "youtube-recommendations",
+          "template": "/youtube/{videoId}/recommendations"
+        }
+      ]
+    },
+    {
+      "ruleId": "youtube-shortlink",
+      "displayName": "YouTube Short Link Video",
+      "supportedHosts": ["youtu.be"],
+      "matchPattern": "^https?:\\/\\/youtu\\.be\\/(?<videoId>[A-Za-z0-9_-]{6,})(?:\\?.*)?$",
+      "derivedUrls": [
+        {
+          "name": "youtube-player",
+          "template": "/youtube/{videoId}/video"
+        },
+        {
+          "name": "youtube-comments",
+          "template": "/youtube/{videoId}/comments"
+        },
+        {
+          "name": "youtube-metadata",
+          "template": "/youtube/{videoId}/metadata"
+        },
+        {
+          "name": "youtube-recommendations",
+          "template": "/youtube/{videoId}/recommendations"
+        }
+      ]
+    },
+    {
+      "ruleId": "youtube-embed",
+      "displayName": "YouTube Embedded Video",
+      "supportedHosts": ["youtube.com", "www.youtube.com"],
+      "matchPattern": "^https?:\\/\\/(?:www\\.)?youtube\\.com\\/embed\\/(?<videoId>[A-Za-z0-9_-]{6,})(?:\\?.*)?$",
+      "derivedUrls": [
+        {
+          "name": "youtube-player",
+          "template": "/youtube/{videoId}/video"
+        },
+        {
+          "name": "youtube-comments",
+          "template": "/youtube/{videoId}/comments"
+        },
+        {
+          "name": "youtube-metadata",
+          "template": "/youtube/{videoId}/metadata"
+        },
+        {
+          "name": "youtube-recommendations",
+          "template": "/youtube/{videoId}/recommendations"
+        }
+      ]
+    },
+    {
+      "ruleId": "youtube-shorts",
+      "displayName": "YouTube Shorts Video",
+      "supportedHosts": ["youtube.com", "www.youtube.com"],
+      "matchPattern": "^https?:\\/\\/(?:www\\.)?youtube\\.com\\/shorts\\/(?<videoId>[A-Za-z0-9_-]{6,})(?:\\?.*)?$",
+      "derivedUrls": [
+        {
+          "name": "youtube-player",
+          "template": "/youtube/{videoId}/video"
+        },
+        {
+          "name": "youtube-comments",
+          "template": "/youtube/{videoId}/comments"
+        },
+        {
+          "name": "youtube-metadata",
+          "template": "/youtube/{videoId}/metadata"
+        },
+        {
+          "name": "youtube-recommendations",
+          "template": "/youtube/{videoId}/recommendations"
+        }
+      ]
+    },
+    {
+      "ruleId": "google-maps-page",
+      "displayName": "Google Maps Page",
+      "supportedHosts": ["google.com", "www.google.com", "maps.google.com"],
+      "matchPattern": "^https?:\\/\\/(?:www\\.|maps\\.)?google\\.com\\/maps(?:[\\/?#].*)?$",
+      "derivedUrls": [
+        {
+          "name": "maps-map",
+          "template": "/maps/map"
+        },
+        {
+          "name": "maps-search",
+          "template": "/maps/search"
+        },
+        {
+          "name": "maps-info",
+          "template": "/maps/info"
+        }
+      ]
+    }
+  ]
+}
