@@ -20,67 +20,76 @@ public partial class ModuleController
             topLeft,
         };
 
-        int movedIndex = -1;
-        float maxSqr = moveThreshold * moveThreshold;
-
         Vector3[] cornersLocalPositions = new Vector3[4];
         for (int i = 0; i < 4; i++)
         {
             cornersLocalPositions[i] = ToPlaneSpace(cornerTransforms[i]);
         }
 
-        // Snap corners to the plane and find the corner with the largest movement that exceeds the threshold.
-        for (int i = 0; i < 4; i++)
+        int movedIndex = activeResizeCorner;
+        if (movedIndex < 0)
         {
-            cornerTransforms[i].position = planeReference.TransformPoint(
-                new Vector3(cornersLocalPositions[i].x, cornersLocalPositions[i].y, 0f)
-            );
-            float d = (cornerTransforms[i].position - prevPositions[i]).sqrMagnitude;
-            if (d > maxSqr)
-            {
-                maxSqr = d;
-                movedIndex = i;
-            }
-        }
-
-        if (movedIndex == -1)
-        {
-            EndResizeInteraction();
+            // No corner handle is being dragged: detect which corner moved.
+            float maxSqr = moveThreshold * moveThreshold;
             for (int i = 0; i < 4; i++)
             {
-                prevPositions[i] = cornerTransforms[i].position;
+                cornerTransforms[i].position = planeReference.TransformPoint(
+                    new Vector3(cornersLocalPositions[i].x, cornersLocalPositions[i].y, 0f)
+                );
+                float d = (cornerTransforms[i].position - prevPositions[i]).sqrMagnitude;
+                if (d > maxSqr)
+                {
+                    maxSqr = d;
+                    movedIndex = i;
+                }
             }
-            return;
+
+            if (movedIndex == -1)
+            {
+                EndResizeInteraction();
+                for (int i = 0; i < 4; i++)
+                {
+                    prevPositions[i] = cornerTransforms[i].position;
+                }
+                return;
+            }
         }
 
         BeginResizeInteraction();
 
         int fixedIndex = (movedIndex + 2) % 4;
-        Debug.Log(
-            $"Moved marker: {indexToName[movedIndex]}, fixed marker: {indexToName[fixedIndex]}"
-        );
         int idxNext = (movedIndex + 1) % 4;
         int idxPrev = (movedIndex + 3) % 4;
 
-        Vector3 movedLocal = cornersLocalPositions[movedIndex];
         Vector3 fixedLocal = cornersLocalPositions[fixedIndex];
 
-        Debug.Log($"Moved local: {movedLocal}, Fixed local: {fixedLocal}");
-
-        // Calculate new size based on the moved and fixed corners.
-        // The size is determined by the distance between the moved and fixed corners in the plane's local space.
-        float sizeX =
-            cornersLocalPositions[Math.Max(fixedIndex, movedIndex)].x
-            - cornersLocalPositions[Math.Min(fixedIndex, movedIndex)].x;
-        float sizeY =
-            cornersLocalPositions[Math.Max(fixedIndex, movedIndex)].y
-            - cornersLocalPositions[Math.Min(fixedIndex, movedIndex)].y;
-
-        sizeX *= (movedIndex == 0 || movedIndex == 2) ? 1f : -1f;
-
-        if (sizeX < 0.1f || sizeY < 0.1f)
+        // Content corner: while a handle is dragged, ease toward the grid-snapped position
+        // derived from the smoothed handle proxy, so the panel dimension glides to the
+        // nearest grid step instead of snapping instantly.
+        Vector3 movedLocal;
+        if (activeResizeCorner >= 0 && cornerProxy != null)
         {
-            cornerTransforms[movedIndex].position = prevPositions[movedIndex];
+            Vector3 rawMovedLocal = ToPlaneSpace(cornerProxy.position);
+            Vector3 snappedLocal = cornerTargetingGrid
+                ? cornerGridTargetLocal
+                : SnapMovedCorner(rawMovedLocal, fixedLocal);
+            float t = 1f - Mathf.Exp(-contentSnapRate * Time.deltaTime);
+            contentMovedLocal = Vector3.Lerp(contentMovedLocal, snappedLocal, t);
+            movedLocal = contentMovedLocal;
+        }
+        else
+        {
+            movedLocal = cornersLocalPositions[movedIndex];
+        }
+
+        float sizeX = Mathf.Abs(movedLocal.x - fixedLocal.x);
+        float sizeY = Mathf.Abs(movedLocal.y - fixedLocal.y);
+        if (sizeX < 0.0001f || sizeY < 0.0001f)
+        {
+            if (activeResizeCorner < 0)
+            {
+                cornerTransforms[movedIndex].position = prevPositions[movedIndex];
+            }
             return;
         }
 
@@ -98,9 +107,7 @@ public partial class ModuleController
         }
 
         Vector3 center =
-            (cornerTransforms[fixedIndex].position + cornerTransforms[movedIndex].position) / 2f;
-
-        Debug.Log($"Center: {center}, SizeX: {sizeX}, SizeY: {sizeY}");
+            (cornerTransforms[fixedIndex].position + planeReference.TransformPoint(movedLocal)) / 2f;
 
         ModuleLayoutGenerator generator = GetLayoutGenerator(false);
         bool leafQuadsAttachedToQuad = generator != null && quad != null;
@@ -153,6 +160,11 @@ public partial class ModuleController
     private Vector3 ToPlaneSpace(Transform t)
     {
         return planeReference.InverseTransformPoint(t.position);
+    }
+
+    private Vector3 ToPlaneSpace(Vector3 worldPosition)
+    {
+        return planeReference.InverseTransformPoint(worldPosition);
     }
 
     private void SetQuadTransform(Vector3 center, float sizeX, float sizeY)

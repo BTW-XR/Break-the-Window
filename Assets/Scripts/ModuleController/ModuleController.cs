@@ -21,6 +21,7 @@ public partial class ModuleController : MonoBehaviour
     {
         SavePrevPositions();
         PlacementStart();
+        WireCornerResizeHandlers();
     }
 
     private void Update()
@@ -57,6 +58,11 @@ public partial class ModuleController : MonoBehaviour
         if (isGrabbed && Application.isPlaying && smoothGrabMotion)
         {
             StepGrabSmoothing(Time.deltaTime);
+        }
+
+        if (Application.isPlaying && smoothCornerHandles && activeResizeCorner >= 0)
+        {
+            StepCornerSmoothing(Time.deltaTime);
         }
 
         TransformCorrection();

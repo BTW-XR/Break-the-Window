@@ -26,9 +26,21 @@ public partial class ModuleController
     [SerializeField]
     private float rotationFollowRate = 12f;
 
-    [Tooltip("How long (seconds) the module coasts to a stop after being released in mid-air.")]
+    [Tooltip("Minimum settle time (seconds) after release before the module detaches. 0 releases as soon as it catches up.")]
     [SerializeField]
-    private float releaseSettleTime = 0.15f;
+    private float releaseSettleTime = 0f;
+
+    [Tooltip("Maximum time (seconds) the module may take to settle after release before detaching anyway.")]
+    [SerializeField]
+    private float releaseSettleMaxTime = 2f;
+
+    [Tooltip("How close (meters) the module must be to the release pose before detaching.")]
+    [SerializeField]
+    private float releaseSettleConvergence = 0.01f;
+
+    [Tooltip("How close (degrees) the module's rotation must be to the release pose before detaching.")]
+    [SerializeField]
+    private float releaseSettleConvergenceAngle = 1f;
 
     // Runtime proxy that carries the module while it is grabbed. The proxy is driven by a
     // critically damped spring + One Euro filter toward the XRI-driven grabber, so the panel
@@ -119,8 +131,9 @@ public partial class ModuleController
         smoothedGrabber.rotation = Quaternion.Slerp(smoothedGrabber.rotation, targetRotation, t);
     }
 
-    // Release path for mid-air drops: coast the module to a stop at the release pose
-    // before detaching, so letting go mid-motion settles instead of freezing abruptly.
+    // Release path for mid-air drops: keep easing the module to the release pose until it
+    // fully catches up to the grabber, then detach. Letting go mid-motion therefore settles
+    // at the exact spot the grabber was put down instead of freezing short of it.
     private void BeginReleaseSettle()
     {
         if (!Application.isPlaying || smoothedGrabber == null || grabber == null)
@@ -138,9 +151,17 @@ public partial class ModuleController
     private IEnumerator FinishReleaseSettle()
     {
         float elapsed = 0f;
-        while (elapsed < releaseSettleTime && smoothTargetFrozen)
+        while (smoothTargetFrozen)
         {
             elapsed += Time.deltaTime;
+            if (elapsed >= releaseSettleTime && GrabSpringConverged())
+            {
+                break;
+            }
+            if (elapsed >= releaseSettleMaxTime)
+            {
+                break;
+            }
             yield return null;
         }
 
@@ -151,6 +172,20 @@ public partial class ModuleController
             smoothTargetFrozen = false;
             OnGrabberRelease();
         }
+    }
+
+    private bool GrabSpringConverged()
+    {
+        if (smoothedGrabber == null)
+        {
+            return true;
+        }
+
+        float positionError = Vector3.Distance(smoothedGrabber.position, frozenTargetPosition);
+        float rotationError = Quaternion.Angle(smoothedGrabber.rotation, frozenTargetRotation);
+        return positionError <= releaseSettleConvergence
+            && smoothedGrabberVelocity.sqrMagnitude <= releaseSettleConvergence * releaseSettleConvergence
+            && rotationError <= releaseSettleConvergenceAngle;
     }
 
     private struct OneEuroFilter3

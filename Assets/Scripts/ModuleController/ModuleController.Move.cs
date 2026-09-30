@@ -9,6 +9,7 @@ public partial class ModuleController
         bool wasGrabbed = isGrabbed;
         isGrabbed = true;
         EndResizeInteraction();
+        CancelCornerResize();
         markers = GetMovableChildren();
         if (grabber == null || markers == null)
         {

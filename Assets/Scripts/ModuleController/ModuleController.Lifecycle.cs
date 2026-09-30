@@ -50,6 +50,7 @@ public partial class ModuleController
             placementInteractable.selectExited.RemoveListener(OnSurfacePlacementUnselect);
         }
 
+        CancelCornerResize();
         ClearMergePreview();
         instances.Remove(this);
     }
