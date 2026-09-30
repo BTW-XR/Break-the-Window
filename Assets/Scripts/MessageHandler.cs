@@ -20,6 +20,13 @@ public class MessageHandler : MonoBehaviour
     async void Start()
     {
         webViewPrefab = GetComponentInChildren<CanvasWebViewPrefab>();
+        // Some host objects (e.g. the module's UrlDisplay) carry a MessageHandler without a
+        // CanvasWebViewPrefab; those should no-op instead of throwing.
+        if (webViewPrefab == null)
+        {
+            Debug.LogWarning("MessageHandler: no CanvasWebViewPrefab found in children; skipping message wiring.", this);
+            return;
+        }
         // Wait for the WebViewPrefab to initialize because the WebViewPrefab.WebView property
         // is null until the prefab has initialized.
         await webViewPrefab.WaitUntilInitialized();

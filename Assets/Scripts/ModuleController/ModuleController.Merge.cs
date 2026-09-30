@@ -5,6 +5,14 @@ public partial class ModuleController
 {
     #region Merge
     /// <summary>
+    /// True when a valid merge preview currently exists (a merge candidate is available).
+    /// </summary>
+    public bool HasMergeCandidate()
+    {
+        return activeMergeTarget != null && TryGetMergePreviewCornerPositions(out _);
+    }
+
+    /// <summary>
     /// Confirms a merge only when a valid merge preview actually exists.
     /// Returns true if a merge was completed, false otherwise (no candidate / no preview).
     /// Safe to call on every release without spamming "cannot confirm merge" errors.
@@ -90,6 +98,16 @@ public partial class ModuleController
         // Finalize: clear local preview and disable the two source modules.
         ModuleController sourceA = this;
         ModuleController sourceB = activeMergeTarget;
+
+        // Release any active grab state so the source modules' children (handles, content)
+        // return to their own hierarchy and the smoothing proxy is destroyed before the
+        // modules are disabled. Otherwise children can be left under the runtime proxy and
+        // keep rendering after the merge.
+        sourceA.OnGrabberRelease();
+        if (sourceB != null && sourceB != sourceA)
+        {
+            sourceB.OnGrabberRelease();
+        }
 
         sourceA.GetLayoutGenerator(true)?.ClearAllGeneratedLayoutVisuals();
         sourceB.GetLayoutGenerator(true)?.ClearAllGeneratedLayoutVisuals();

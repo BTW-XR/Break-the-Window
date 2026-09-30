@@ -103,7 +103,6 @@ public partial class ModuleController
         }
 
         cornerProxy = new GameObject("CornerProxy").transform;
-        cornerProxy.hideFlags = HideFlags.HideAndDontSave;
         cornerProxy.SetParent(originalParent, false);
         cornerProxy.SetPositionAndRotation(corner.position, corner.rotation);
 

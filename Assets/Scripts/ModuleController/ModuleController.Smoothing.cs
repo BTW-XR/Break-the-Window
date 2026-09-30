@@ -67,7 +67,6 @@ public partial class ModuleController
         if (smoothedGrabber == null)
         {
             var go = new GameObject("SmoothedGrabber");
-            go.hideFlags = HideFlags.HideAndDontSave;
             smoothedGrabber = go.transform;
             if (grabber.parent != null)
             {
@@ -97,6 +96,26 @@ public partial class ModuleController
             DestroyImmediate(smoothedGrabber.gameObject);
         }
         smoothedGrabber = null;
+    }
+
+    // Skips all grab smoothing animation and jumps the module to its final (un-lagged)
+    // state. Used before operations such as merge that read the real handle positions.
+    private void SnapGrabToFinalState()
+    {
+        if (m_placementCoroutine != null)
+        {
+            StopCoroutine(m_placementCoroutine);
+            m_placementCoroutine = null;
+        }
+        placementAnimating = false;
+
+        if (smoothedGrabber != null && grabber != null)
+        {
+            smoothedGrabber.SetPositionAndRotation(grabber.position, grabber.rotation);
+            smoothedGrabberVelocity = Vector3.zero;
+            smoothTargetFrozen = false;
+            oneEuroGrabFilter = new OneEuroFilter3(grabber.position, oneEuroMinCutoff, oneEuroBeta);
+        }
     }
 
     private void StepGrabSmoothing(float deltaTime)

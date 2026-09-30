@@ -116,7 +116,14 @@ public partial class ModuleController
         UpdatePlacementIndicatorVisibility(false);
         Debug.Log("\n\n\n--------------------------------- Placement ---------------------------------\n\n\n");
 
-        // 1) Prefer merging: if a valid merge preview exists, commit the merge and stop.
+        // 1) Prefer merging: if a valid merge preview exists, jump the grab smoothing to its
+        //    final state (the merge reads the real handle positions) and commit the merge.
+        if (HasMergeCandidate())
+        {
+            SnapGrabToFinalState();
+            UpdateMergePreview();
+        }
+
         if (TryConfirmMerge())
         {
             Debug.Log("Placement: confirmed merge on grab release.");
