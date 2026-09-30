@@ -103,7 +103,9 @@ public partial class ModuleController
         if (m_placementCoroutine != null)
         {
             StopCoroutine(m_placementCoroutine);
+            m_placementCoroutine = null;
         }
+        placementAnimating = false;
 
         OnGrabberGrab();
     }
@@ -133,8 +135,8 @@ public partial class ModuleController
             Debug.Log("Placement: m_surfacePlacementSupported=" + m_surfacePlacementSupported);
         }
 
-        // 3) Nothing to place on (or placement unsupported) -> release immediately.
-        OnGrabberRelease();
+        // 3) Nothing to place on (or placement unsupported) -> settle to a stop, then release.
+        BeginReleaseSettle();
     }
 
     private void InitializePlacementLineRenderer()
@@ -186,6 +188,8 @@ public partial class ModuleController
         var initialPosition = raycastOrigin.position;
         var initialRotation = raycastOrigin.rotation;
 
+        placementAnimating = true;
+
         while (elapsedTime < PLACEMENT_SMOOTH_TIME)
         {
             elapsedTime += Time.deltaTime;
@@ -196,11 +200,23 @@ public partial class ModuleController
             raycastOrigin.position = Vector3.Lerp(initialPosition, m_targetPosition, easedT);
             raycastOrigin.rotation = Quaternion.Slerp(initialRotation, m_targetRotation, easedT);
 
+            // Mirror the animation onto the smoothing proxy so the visuals follow exactly.
+            if (smoothedGrabber != null)
+            {
+                smoothedGrabber.SetPositionAndRotation(raycastOrigin.position, raycastOrigin.rotation);
+            }
+
             yield return null;
         }
 
         raycastOrigin.position = m_targetPosition;
         raycastOrigin.rotation = m_targetRotation;
+        if (smoothedGrabber != null)
+        {
+            smoothedGrabber.SetPositionAndRotation(raycastOrigin.position, raycastOrigin.rotation);
+        }
+
+        placementAnimating = false;
 
         OnGrabberRelease();
     }

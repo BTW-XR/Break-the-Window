@@ -54,6 +54,11 @@ public partial class ModuleController : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (isGrabbed && Application.isPlaying && smoothGrabMotion)
+        {
+            StepGrabSmoothing(Time.deltaTime);
+        }
+
         TransformCorrection();
     }
 }

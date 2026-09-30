@@ -15,16 +15,22 @@ public partial class ModuleController
             return;
         }
 
+        if (Application.isPlaying && smoothGrabMotion)
+        {
+            EnsureSmoothedGrabber();
+        }
+
         if (!wasGrabbed)
         {
             LogMoveStarted();
         }
 
+        Transform grabParent = GrabParent;
         for (int i = 0; i < markers.Length; i++)
         {
             if (markers[i] != null)
             {
-                markers[i].SetParent(grabber, true);
+                markers[i].SetParent(grabParent, true);
             }
         }
 
@@ -35,7 +41,7 @@ public partial class ModuleController
             return;
         }
 
-        generator.ReparentGeneratedQuads(grabber);
+        generator.ReparentGeneratedQuads(grabParent);
     }
 
     public void OnGrabberRelease()
@@ -65,6 +71,8 @@ public partial class ModuleController
         {
             LogMoveEnded();
         }
+
+        DestroySmoothedGrabber();
 
         ModuleLayoutGenerator generator = GetLayoutGenerator(false);
         if (generator == null)
