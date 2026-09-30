@@ -39,7 +39,7 @@ public partial class ModuleController : MonoBehaviour
             HandleResize();
         }
 
-        if (doMerge && (isGrabbed || isResizing))
+        if (doMerge && isGrabbed)
         {
             UpdateMergePreview();
         }

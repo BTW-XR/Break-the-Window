@@ -106,6 +106,16 @@ public partial class ModuleController
             cornerTransforms[idxPrev].position = planeReference.TransformPoint(yChangeLocal);
         }
 
+        // Content corner positions (plane-local). For the dragged corner this is the eased
+        // grid position, not the raw marker, so the grabber tracks the content edge.
+        Vector3[] contentCornersLocal = new Vector3[4];
+        contentCornersLocal[fixedIndex] = fixedLocal;
+        contentCornersLocal[movedIndex] = movedLocal;
+        contentCornersLocal[idxNext] =
+            (movedIndex == 0 || movedIndex == 2) ? yChangeLocal : xChangeLocal;
+        contentCornersLocal[idxPrev] =
+            (movedIndex == 0 || movedIndex == 2) ? xChangeLocal : yChangeLocal;
+
         Vector3 center =
             (cornerTransforms[fixedIndex].position + planeReference.TransformPoint(movedLocal)) / 2f;
 
@@ -122,7 +132,7 @@ public partial class ModuleController
         {
             SetPlaneRefTransform(center);
             SetQuadTransform(center, sizeX, sizeY);
-            SetGrabberTransform();
+            SetGrabberTransform(contentCornersLocal);
         }
         finally
         {
@@ -173,10 +183,10 @@ public partial class ModuleController
         quad.localScale = new Vector3(sizeX, sizeY, 1f);
     }
 
-    private void SetGrabberTransform()
+    private void SetGrabberTransform(Vector3[] contentCornersLocal)
     {
         grabber.position = planeReference.TransformPoint(
-            (ToPlaneSpace(bottomLeft) + ToPlaneSpace(bottomRight)) / 2f + grabberOffset
+            (contentCornersLocal[0] + contentCornersLocal[1]) / 2f + grabberOffset
         );
     }
 

@@ -4,11 +4,6 @@ using UnityEngine;
 public partial class ModuleController
 {
     #region Merge
-    public void VoidConfirmMerge()
-    {
-        TryConfirmMerge();
-    }
-
     /// <summary>
     /// Confirms a merge only when a valid merge preview actually exists.
     /// Returns true if a merge was completed, false otherwise (no candidate / no preview).
@@ -130,7 +125,42 @@ public partial class ModuleController
         mergedObject.GetComponent<ContentListManager>()?.FindDependencies();
         mergedObject.GetComponent<ContentListManager>()?.RegenerateView();
 
+        RebindContentCanvasesToMergedLayout(mergedController);
+
         return mergedController;
+    }
+
+    // After a merge the source modules' leaf quads are destroyed and the merged module
+    // regenerates fresh leaf quads. Ask every canvas whose content now lives in the merged
+    // layout to re-search for its target so webviews follow the merged footprint instead of
+    // holding stale references to the destroyed source quads.
+    private void RebindContentCanvasesToMergedLayout(ModuleController mergedController)
+    {
+        if (mergedController == null || mergedController.LayoutTree == null)
+        {
+            return;
+        }
+
+        List<string> mergedContentIds = mergedController.LayoutTree.CollectLeafContentIds();
+
+        CanvasManager[] allCanvasManagers =
+            FindObjectsByType<CanvasManager>(FindObjectsSortMode.None);
+        for (int i = 0; i < allCanvasManagers.Length; i++)
+        {
+            CanvasManager canvasManager = allCanvasManagers[i];
+            if (canvasManager == null)
+            {
+                continue;
+            }
+
+            string contentId = canvasManager.TargetContentId;
+            if (contentId == null || !mergedContentIds.Contains(contentId))
+            {
+                continue;
+            }
+
+            canvasManager.FindTargetLeafTransformByContentId();
+        }
     }
 
     private void UpdateMergePreview()
