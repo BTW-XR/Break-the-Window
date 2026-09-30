@@ -117,7 +117,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 692e8ba88a92a3649977fca50420777a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CanvasResizer
-  zOffset: 0.01
+  zOffset: 0.025
   width: 0.40384585
   height: 0.39999974
   forceDimensions: 1

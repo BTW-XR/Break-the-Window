@@ -54,7 +54,7 @@ public partial class ModuleController
 
         m_surfacePlacementSupported = ValidateSurfacePlacementSupport();
 
-        if (showLineIndicator && lineIndicatorPrefab)
+        if (m_surfacePlacementSupported && showLineIndicator && lineIndicatorPrefab)
         {
             InitializePlacementLineRenderer();
         }
