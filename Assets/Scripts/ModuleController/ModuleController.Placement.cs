@@ -25,7 +25,7 @@ public partial class ModuleController
     [SerializeField]
     private UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable placementInteractable;
 
-    [SerializeField] private bool useHandAsFakeTable = true;
+    [SerializeField] private bool useHandAsFakeTable = false;
     [SerializeField] private Transform raycastOrigin;
     [SerializeField] private float placementDistance = 1.0f;
     [SerializeField] private float hoverDistance = 0.1f;
@@ -50,6 +50,11 @@ public partial class ModuleController
 
     private void PlacementStart()
     {
+        if (!Application.isPlaying)
+        {
+            return;
+        }
+
         m_raycastManager = FindAnyObjectByType<EnvironmentRaycastManager>();
 
         m_surfacePlacementSupported = ValidateSurfacePlacementSupport();

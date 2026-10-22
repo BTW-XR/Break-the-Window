@@ -21,7 +21,8 @@ Shader "Custom/DynamicUIShader"
 
         Pass
         {
-            Blend SrcAlpha OneMinusSrcAlpha
+            // Preserve coverage alpha for the passthrough compositor.
+            Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
             ZWrite Off
             Cull Off
 
@@ -29,6 +30,7 @@ Shader "Custom/DynamicUIShader"
 
             #pragma vertex vert
             #pragma fragment frag
+            #pragma multi_compile_instancing
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 

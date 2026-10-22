@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7530777499041651906}
   - component: {fileID: 8432946882032839193}
   - component: {fileID: 873809783494914004}
+  - component: {fileID: 3364724181517698051}
   m_Layer: 0
   m_Name: Environment Raycast Manager
   m_TagString: Untagged
@@ -62,3 +63,30 @@ MonoBehaviour:
   _removeHands: 1
   CustomTrackingSpace: {fileID: 0}
   <MaskMeshFilters>k__BackingField: []
+--- !u!114 &3364724181517698051
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8893418568851779866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f62c7b7418ee024aa16285921e63d56, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  m_ProcessPermissionsOnAwake: 1
+  m_PermissionGroups:
+  - platformType: 0
+    permissions:
+    - permissionId: com.oculus.permission.USE_SCENE
+      enabled: 1
+      requested: 0
+      responseReceived: 0
+      granted: 0
+      onPermissionGranted:
+        m_PersistentCalls:
+          m_Calls: []
+      onPermissionDenied:
+        m_PersistentCalls:
+          m_Calls: []

@@ -1159,7 +1159,7 @@ MonoBehaviour:
     planeLocalOffset: {x: 0.08, y: 0, z: 0}
     alignRotationToPlane: 1
   placementInteractable: {fileID: 1880516539544945515}
-  useHandAsFakeTable: 1
+  useHandAsFakeTable: 0
   raycastOrigin: {fileID: 640202795049683741}
   placementDistance: 0.4
   hoverDistance: 0.1
